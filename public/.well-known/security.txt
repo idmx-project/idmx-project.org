@@ -1,0 +1,5 @@
+Contact: mailto:security@idmx-project.org
+Expires: 2027-09-28T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://idmx-project.org/.well-known/security.txt
+Policy: https://idmx-project.org/contribute/#security-issues

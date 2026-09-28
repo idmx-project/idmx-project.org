@@ -47,10 +47,18 @@ jobs:
           IDMX_REPO: .idmx
           IDMX_LATEST_REF: origin/main
 
-      - uses: actions/upload-pages-artifact@v4
+      # Packaged by hand: upload-pages-artifact@v4 drops dot-directories such as .well-known/.
+      - name: Package site
+        if: github.event_name != 'pull_request'
+        run: tar --dereference --hard-dereference -C dist -cf "$RUNNER_TEMP/artifact.tar" .
+
+      - uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
-          path: dist
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
 
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
