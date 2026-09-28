@@ -4,7 +4,7 @@ Source of [idmx-project.org](https://idmx-project.org), the public website of
 [IDMX](https://github.com/idmx-project/idmx) (Inter-Domain Mail Exchange).
 
 Built with [Astro](https://astro.build) and [Starlight](https://starlight.astro.build),
-served as a static-assets-only Cloudflare Worker (`wrangler.jsonc`).
+hosted on GitHub Pages.
 
 ## Develop
 
@@ -34,16 +34,15 @@ PUBLISH_SPEC=true npm run build
 
 ## Deployment
 
-`.github/workflows/deploy.yml` builds and deploys on push to `main` (production),
+`.github/workflows/deploy.yml` deploys to GitHub Pages on push to `main`,
 nightly, and when `idmx` sends a `repository_dispatch` of type
-`idmx-spec-updated`. Pull requests get a preview URL (`pr-<number>-idmx-project-org.<subdomain>.workers.dev`).
-The first deploy creates the Worker and attaches `idmx-project.org`.
+`idmx-spec-updated`. Pull requests are built but not deployed. The custom
+domain comes from `public/CNAME`; DNS stays at Infomaniak (`A` records for
+GitHub Pages on `@`, `CNAME` `www` → `idmx-project.github.io`).
 
 | Setting | Kind | Purpose |
 |---|---|---|
-| `CLOUDFLARE_API_TOKEN` | secret | Cloudflare token from the *Edit Cloudflare Workers* template |
-| `CLOUDFLARE_ACCOUNT_ID` | secret | Cloudflare account |
-| `IDMX_READ_TOKEN` | secret | Fine-grained PAT, *Contents: read* on `idmx-project/idmx` |
+| `IDMX_READ_TOKEN` | secret | Fine-grained PAT, *Contents: read* on `idmx-project/idmx`; not needed once `idmx` is public |
 | `PUBLISH_SPEC` | variable | `true` to publish the spec |
 
 ## License

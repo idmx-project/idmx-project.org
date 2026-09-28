@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: idmx-project/idmx
-          token: ${{ secrets.IDMX_READ_TOKEN }}
+          token: ${{ secrets.IDMX_READ_TOKEN || github.token }}
           path: .idmx
           fetch-depth: 0
           fetch-tags: true
@@ -47,19 +47,21 @@ jobs:
           IDMX_REPO: .idmx
           IDMX_LATEST_REF: origin/main
 
-      - name: Deploy to production
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+          path: dist
 
-      - name: Upload preview
-        # PRs from forks have no secrets; they get a build check only.
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }}
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
