@@ -52,7 +52,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: tar --dereference --hard-dereference -C dist -cf "$RUNNER_TEMP/artifact.tar" .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: github.event_name != 'pull_request'
         with:
           name: github-pages
@@ -72,4 +72,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
