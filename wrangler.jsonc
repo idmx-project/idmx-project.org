@@ -1,0 +1,13 @@
+// Cloudflare Worker serving the static build (no Worker script, assets only).
+{
+  "name": "idmx-project-org",
+  "compatibility_date": "2026-09-28",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "force-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "idmx-project.org", "custom_domain": true }],
+  "preview_urls": true,
+  "workers_dev": false
+}

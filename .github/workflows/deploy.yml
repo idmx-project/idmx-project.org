@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Sent by idmx when the spec changes on main or a spec draft is tagged.
+  repository_dispatch:
+    types: [idmx-spec-updated]
+  # Safety net for missed dispatches.
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out idmx (spec source)
+        if: vars.PUBLISH_SPEC == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: idmx-project/idmx
+          token: ${{ secrets.IDMX_READ_TOKEN }}
+          path: .idmx
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+        env:
+          PUBLISH_SPEC: ${{ vars.PUBLISH_SPEC }}
+          IDMX_REPO: .idmx
+          IDMX_LATEST_REF: origin/main
+
+      - name: Deploy to production
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Upload preview
+        # PRs from forks have no secrets; they get a build check only.
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }}
