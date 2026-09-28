@@ -7,8 +7,10 @@ IDMX is **experimental**. Nothing is stable yet, and nothing should carry produc
 
 ## Now: v1-draft-00 in review
 
-The first specification draft, **v1-draft-00**, is frozen and in private review with a small group of
-invited reviewers. The review can still change the wire format. Each such change gets a new draft number,
+The first specification draft, **[v1-draft-00](/spec/v1-draft-00/)**, is frozen and in **public review**.
+Anyone who runs, builds or studies mail systems is invited to comment; the
+[reviewer guide](/spec/v1-draft-00/review/) lists the open questions. The review can still change the wire
+format. Each such change gets a new draft number,
 so a tagged draft never changes after it is published.
 
 After the review, the spec becomes **v1 final**. From then on it only gets errata; new behavior goes into a

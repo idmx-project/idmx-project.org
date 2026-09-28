@@ -16,6 +16,9 @@ const DOCS_OUT = 'src/content/docs/spec';
 const PUBLIC_OUT = 'public/spec';
 const MANIFEST = 'spec-manifest.json';
 
+// Tagged drafts open for public review. Remove a draft when its review closes.
+const IN_REVIEW = new Set(['v1-draft-00']);
+
 // Reading order from spec/REVIEW.md; unknown pages sort after these.
 const PAGE_ORDER = ['discovery', 'signing', 'delivery', 'capabilities', 'errors', 'iana', 'review'];
 
@@ -115,10 +118,19 @@ function syncDraft(draft) {
 }
 
 function draftBanner(draft) {
-  return draft.name === 'latest'
-    ? { banner: { content: 'Editor’s draft: changes at any time. Cite a tagged draft instead.' } }
-    : {};
+  if (draft.name === 'latest') {
+    return { banner: { content: 'Editor’s draft: changes at any time. Cite a tagged draft instead.' } };
+  }
+  if (IN_REVIEW.has(draft.name)) {
+    draft.hasReview ??= git('ls-tree', '--name-only', draft.ref, 'spec/REVIEW.md').trim() !== '';
+    const guide = draft.hasReview
+      ? ` See the <a href="/spec/${draft.name}/review/">reviewer guide</a>.`
+      : '';
+    return { banner: { content: `${draft.name} is in public review; feedback welcome.${guide}` } };
+  }
+  return {};
 }
+
 
 function splitTitle(md) {
   const m = /^# (.+)\n/m.exec(md);
@@ -162,10 +174,15 @@ function writeSpecIndex(drafts) {
       `A **draft** is a tagged, immutable revision: its URLs and section numbers never change, so cite a draft ` +
       `(for example “${tagged[0]?.name ?? 'v1-draft-00'} §2.1”). The **editor’s draft** is the current work and ` +
       `may change at any time.\n\n` +
-      `| Revision | |\n|---|---|\n` +
-      drafts.map((d) => `| [${d.label}](/spec/${d.name}/) | ${d.name === 'latest' ? 'work in progress' : 'tagged'} |`).join('\n') +
+      `| Revision | Status |\n|---|---|\n` +
+      drafts.map((d) => `| [${d.label}](/spec/${d.name}/) | ${draftStatus(d)} |`).join('\n') +
       '\n',
   );
+}
+
+function draftStatus(draft) {
+  if (draft.name === 'latest') return 'work in progress';
+  return IN_REVIEW.has(draft.name) ? '**in public review**' : 'tagged';
 }
 
 function writePlaceholder() {
@@ -173,11 +190,10 @@ function writePlaceholder() {
     join(DOCS_OUT, 'index.md'),
     frontmatter({
       title: 'Specification',
-      description: 'The IDMX specification is in private review and will be published here.',
+      description: 'The IDMX specification will be published here.',
       sidebar: { order: 0 },
     }) +
-      `The first draft of the IDMX specification, **v1-draft-00**, is in private review with a small group of ` +
-      `invited reviewers. It will be published here once that review ends, with a permanent URL for every draft.\n\n` +
+      `The IDMX specification will be published here, with a permanent URL for every draft.\n\n` +
       `Until then, [How it works](/how-it-works/) describes the design in plain terms.\n`,
   );
 }
