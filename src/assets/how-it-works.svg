@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="system-ui, sans-serif" font-size="13" role="img" aria-labelledby="t d">
+  <title id="t">How an IDMX delivery works</title>
+  <desc id="d">The sending domain looks up an SVCB record at _idmx for the recipient domain. If one exists, it posts the signed message over HTTPS to the IDMX receiver, which verifies the signature with a key published in the sender's DNS and hands the message to local delivery. If no record exists, the sender falls back to MX lookup and SMTP.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1f2937"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b7280"/></marker>
+  </defs>
+  <rect width="760" height="400" rx="12" fill="#ffffff"/>
+  <g fill="#1f2937">
+    <!-- boxes -->
+    <rect x="20" y="150" width="170" height="70" rx="8" fill="#eef2ff" stroke="#3b5bdb" stroke-width="1.5"/>
+    <text x="105" y="180" text-anchor="middle" font-weight="600">Sending domain</text>
+    <text x="105" y="200" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12">sender.example</text>
+
+    <rect x="255" y="20" width="250" height="80" rx="8" fill="#f9fafb" stroke="#6b7280" stroke-width="1.5"/>
+    <text x="380" y="44" text-anchor="middle" font-weight="600">DNS</text>
+    <text x="380" y="66" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">_idmx.receiver.example SVCB</text>
+    <text x="380" y="84" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11">s1._idmxkey.sender.example TXT</text>
+
+    <rect x="570" y="150" width="170" height="70" rx="8" fill="#eef2ff" stroke="#3b5bdb" stroke-width="1.5"/>
+    <text x="655" y="180" text-anchor="middle" font-weight="600">IDMX receiver</text>
+    <text x="655" y="200" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12">receiver.example</text>
+
+    <rect x="570" y="310" width="170" height="70" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+    <text x="655" y="340" text-anchor="middle" font-weight="600">Mailbox</text>
+    <text x="655" y="360" text-anchor="middle" font-family="ui-monospace, monospace" font-size="12">bob@receiver.example</text>
+
+    <rect x="295" y="310" width="170" height="70" rx="8" fill="#f9fafb" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="380" y="340" text-anchor="middle" font-weight="600">SMTP via MX</text>
+    <text x="380" y="360" text-anchor="middle" font-size="12">legacy path</text>
+  </g>
+  <g fill="none" stroke-width="1.5">
+    <path d="M140 150L270 102" stroke="#1f2937" marker-end="url(#a)"/>
+    <path d="M190 185H566" stroke="#3b5bdb" stroke-width="2.5" marker-end="url(#a)"/>
+    <path d="M610 150L490 102" stroke="#1f2937" marker-end="url(#a)"/>
+    <path d="M655 220V306" stroke="#059669" marker-end="url(#a)"/>
+    <path d="M105 220V345H291" stroke="#6b7280" stroke-dasharray="5 4" marker-end="url(#g)"/>
+    <path d="M465 345H566" stroke="#6b7280" stroke-dasharray="5 4" marker-end="url(#g)"/>
+  </g>
+  <g fill="#1f2937" font-size="12">
+    <text x="118" y="118">① discover</text>
+    <text x="378" y="175" text-anchor="middle" font-weight="600" fill="#3b5bdb">② POST /v1/messages</text>
+    <text x="378" y="206" text-anchor="middle">signed (RFC 9421) · TLS 1.3</text>
+    <text x="575" y="118">③ verify key</text>
+    <text x="665" y="268">④ local delivery</text>
+    <text x="115" y="335" fill="#6b7280">no IDMX record</text>
+  </g>
+</svg>

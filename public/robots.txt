@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://idmx-project.org/sitemap-index.xml

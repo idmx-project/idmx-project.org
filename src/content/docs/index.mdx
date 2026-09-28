@@ -1,0 +1,42 @@
+---
+title: IDMX — Inter-Domain Mail Exchange
+description: IDMX delivers mail between domains over HTTPS, keeps user@domain addresses, and falls back to SMTP for everyone who has not upgraded.
+template: splash
+hero:
+  title: Mail between domains, over HTTPS
+  tagline: IDMX is an experimental open standard for server-to-server email delivery. Same addresses, same message format, SMTP as the fallback, and authenticated sender domains from day one.
+  image:
+    file: ../../assets/mail.svg
+    alt: ""
+  actions:
+    - text: How it works
+      link: /how-it-works/
+      icon: right-arrow
+    - text: Why IDMX
+      link: /why/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Keeps your address" icon="email">
+    `alice@example.com` stays `alice@example.com`. IDMX changes how mail travels between domains, not who
+    you are.
+  </Card>
+  <Card title="Works with SMTP" icon="random">
+    When the recipient's domain does not speak IDMX, the sender uses SMTP as it does today. There is no
+    migration date, and no one has to upgrade first.
+  </Card>
+  <Card title="Authenticated by default" icon="approve-check">
+    Every delivery is signed by the sending domain with an HTTP Message Signature (RFC 9421). Keys live in
+    DNS, as DKIM keys do.
+  </Card>
+  <Card title="Built from standard parts" icon="puzzle">
+    HTTPS, TLS 1.3, DNS SVCB records, JSON and an OpenAPI contract. No new wire protocol, so you can
+    implement it in any language.
+  </Card>
+</CardGrid>
+
+IDMX is **experimental**. Its first specification draft, v1-draft-00, is in review. See
+[Status & roadmap](/status/).
